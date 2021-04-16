@@ -1,0 +1,63 @@
+@import '../../assets/scss/variables.scss';
+
+.scheduler__Container {
+    // background: lightskyblue;
+    max-width: 100%;
+    overflow-x: scroll;
+
+    
+
+    .scheduler__day--column{
+        min-width: 20%;
+        width: 100px;
+
+        .scheduler__day--header{
+            font-size: 12px;
+            text-align: center; 
+            color: $text-color;
+            padding: 8px;
+            border-bottom: 1px solid #c4c4c4;
+
+            h6, h5 {
+                margin: 0;
+            }
+
+            h6{
+                font-size: 12px;
+                font-weight: $light;
+                color: #8E8E8E;
+            }
+
+            h5 {
+                font-size: 15px;
+            }
+        }
+    }
+
+    .scheduler__cell{
+        background: $white;
+        min-height: 35px;
+        color: #717171;
+        font-weight: $medium;
+
+        padding: 8px;
+
+        text-align: center;
+        font-size: 11px;
+
+        border-right-width: thin;
+        border-right-style: solid;
+        border-right-color: #c4c4c4;
+
+        border-bottom-width: thin;
+        border-bottom-style: dashed;
+        border-bottom-color: #7fc65c7a;
+
+        &.selected {
+            background: $green;
+            color: $white;
+            border-color: #88e659;
+        }
+    }
+
+}

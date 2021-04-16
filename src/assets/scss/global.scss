@@ -7,4 +7,9 @@ body {
     background: $bg-colors;
     color: $black;
     font-weight: $light;
+
+    .title{
+        font-size: 18px;
+        margin: .5em 0;
+    }
 }
