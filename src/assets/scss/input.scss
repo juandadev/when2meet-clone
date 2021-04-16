@@ -1,0 +1,21 @@
+@import './variables.scss';
+
+.input {
+    background: $white;
+    border: 1px solid $light-gray;
+    border-radius: $border-radius;
+    box-shadow: none;
+    margin-bottom: 12px;
+    color: $black;
+    text-transform: capitalize;
+
+    &::placeholder {
+        font-weight: $light;
+    }
+
+    &:focus {
+        outline: none;
+        box-shadow: none;
+        border: 1px solid $primary-color;
+    }
+}
