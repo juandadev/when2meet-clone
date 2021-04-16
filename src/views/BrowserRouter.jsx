@@ -6,7 +6,7 @@ export default function BrowserRouter() {
   return (
     <Router>
       <Switch>
-        <Route path="/" component={Home} />
+        <Route exact path="/" component={Home} />
 
         <Route path="*" component={NotFound} />
       </Switch>
