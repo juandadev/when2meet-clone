@@ -1,8 +1,9 @@
-@import './variables.scss';
+@import "./variables.scss";
 
 .btn {
-    background: $primary-color;
-    color: $white;
-    min-width: 100%;
-    padding: .5em 1e.5m;
+  background: $primary-color;
+  border: 1px solid $primary-color;
+  color: $white;
+  min-width: 100%;
+  padding: 0.5em 1e.5m;
 }
