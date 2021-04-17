@@ -1,5 +1,6 @@
 {
   "projects": {
-    "default": "when2connetbutbetter"
+    "default": "when2connetbutbetter",
+    "dev": "nrggo-test"
   }
 }
