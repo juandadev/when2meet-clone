@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { utcToZonedTime } from 'date-fns';
+import { format, formatISO } from 'date-fns';
 import { Row, Col, Form, Button } from 'react-bootstrap';
 import DayPicker, { DateUtils } from 'react-day-picker';
 import WeekDayPicker from '../components/WeekDayPicker';
 import Layout from './Layout';
 
 const currentTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
-var aryIannaTimeZones = [
+const aryIannaTimeZones = [
   'Europe/Andorra',
   'Asia/Dubai',
   'Asia/Kabul',
@@ -358,6 +357,24 @@ var aryIannaTimeZones = [
   'Africa/Johannesburg',
 ];
 
+function getSurveyEndDays() {
+  let todayInMillis = new Date().getTime();
+  let surveyEndDaysISO = [];
+  let surveyEndDaysFormatted = [];
+
+  [...Array(15)].map(() => {
+    todayInMillis += 86400000;
+
+    // Here you can see the date-fns format options for the dates: https://date-fns.org/v2.21.1/docs/format
+    surveyEndDaysISO.push(formatISO(new Date(todayInMillis)));
+    surveyEndDaysFormatted.push(
+      format(new Date(todayInMillis), 'EEEE, MMMM do')
+    );
+  });
+
+  return [surveyEndDaysISO, surveyEndDaysFormatted];
+}
+
 export default function Home() {
   const [eventData, setEventData] = useState({
     name: '',
@@ -369,12 +386,18 @@ export default function Home() {
     timeZone: 'default',
   });
   const [selectedDays, setSelectedDays] = useState([]);
+  const [endDaysISO, setEndDaysISO] = useState([]);
+  const [endDaysFormatted, setEndDaysFormatted] = useState([]);
 
   useEffect(() => {
+    const [ISODays, FormattedDays] = getSurveyEndDays();
+
     setEventData({
       ...eventData,
       timeZone: currentTimeZone,
     });
+    setEndDaysISO(ISODays);
+    setEndDaysFormatted(FormattedDays);
   }, []);
 
   function handleDayClick(day, { selected }) {
@@ -508,11 +531,15 @@ export default function Home() {
                 value={deadLine}
                 onChange={handleChange}
               >
-                {/* TODO: Plan a way to select the day with the calendar instead of the <select> input */}
                 <option value="default">Enter the survey's end day</option>
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
+                {endDaysFormatted.map((days, index) => (
+                  <option
+                    key={`survey-end-day-${index}`}
+                    value={endDaysISO[index]}
+                  >
+                    {days}
+                  </option>
+                ))}
               </Form.Control>
             </Form.Group>
 
