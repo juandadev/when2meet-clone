@@ -356,6 +356,32 @@ const aryIannaTimeZones = [
   'Pacific/Apia',
   'Africa/Johannesburg',
 ];
+const dayHours = [
+  '12:00am',
+  '01:00am',
+  '02:00am',
+  '03:00am',
+  '04:00am',
+  '05:00am',
+  '06:00am',
+  '07:00am',
+  '08:00am',
+  '09:00am',
+  '10:00am',
+  '11:00am',
+  '12:00pm',
+  '01:00pm',
+  '02:00pm',
+  '03:00pm',
+  '04:00pm',
+  '05:00pm',
+  '06:00pm',
+  '07:00pm',
+  '08:00pm',
+  '09:00pm',
+  '10:00pm',
+  '11:00pm',
+];
 
 function getSurveyEndDays() {
   let todayInMillis = new Date().getTime();
@@ -401,6 +427,9 @@ export default function Home() {
   }, []);
 
   function handleDayClick(day, { selected }) {
+    // TODO: Find a way to parse the date format we get from the calendar selected days
+    // TODO: Prevent selecting days before todays date
+    // TODO: Change the calendar timezone in relation to the one selected from the user
     const inputSelectedDays = selectedDays.concat();
 
     if (selected) {
@@ -455,6 +484,7 @@ export default function Home() {
 
       <Row className="create-event__data">
         <Col lg={6} xs={12} className="create-event__data__form">
+          {/* TODO: Validate fields before submitting the data */}
           <Form>
             <Form.Group controlId="name">
               <Form.Control
@@ -500,9 +530,11 @@ export default function Home() {
                     onChange={handleChange}
                   >
                     <option value="default">Not earlier than</option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
+                    {dayHours.map((hour, index) => (
+                      <option key={`init-hour-${index}`} value={hour}>
+                        {hour}
+                      </option>
+                    ))}
                   </Form.Control>
                 </Form.Group>
               </Col>
@@ -516,9 +548,11 @@ export default function Home() {
                     onChange={handleChange}
                   >
                     <option value="default">Not later than</option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
+                    {dayHours.map((hour, index) => (
+                      <option key={`finish-hour-${index}`} value={hour}>
+                        {hour}
+                      </option>
+                    ))}
                   </Form.Control>
                 </Form.Group>
               </Col>
@@ -568,7 +602,6 @@ export default function Home() {
           <Form.Label>Please, choose the days that might work</Form.Label>
 
           {!isRecurrent ? (
-            // TODO: Prevent selecting days before todays date
             <DayPicker
               selectedDays={selectedDays}
               onDayClick={handleDayClick}

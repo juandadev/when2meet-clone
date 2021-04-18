@@ -55,6 +55,7 @@ This software was created with the following technologies:
 - [React Router](https://reactrouter.com/)
 - [Bootstrap 4](https://getbootstrap.com/)
 - [Firebase](https://firebase.google.com/)
+- [date-fns](https://date-fns.org/)
 
 ## Support
 
