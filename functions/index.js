@@ -50,6 +50,18 @@ app.get("/rest/events/:id", async (req, res) => {
 });
 
 app.post("/rest/events/:id", async (req, res) => {
+  let docRef = db.collection("EVENT").doc(req.params.id)
+
+  let data = req.body;
+  data.updatedAt = new Date();
+
+  await docRef.update(data)
+  .then(response => {
+    return res.status(200).json({message: "Success"});
+  })
+  .catch(error => {
+    return res.status(500).json({message: error});
+  })
 
 });
 

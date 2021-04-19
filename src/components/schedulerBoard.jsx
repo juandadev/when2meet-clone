@@ -7,6 +7,9 @@ export default function SchedulerBoard(props) {
     let [count, setCount] = useState(0)
     let groupSelection = props.groupSelection
 
+    useEffect(() => {
+    }, [props])
+
 
     // let handleChange = (newSelection) => {
     //     setCount(count++)
@@ -47,7 +50,7 @@ export default function SchedulerBoard(props) {
     if(!groupSelection) {
         return (
             <div className='d-flex scheduler__Container'>
-                {props.days.map((day, index) => {
+                {props.days && props.scheduler ? props.days.map((day, index) => {
                     let dayName = getDay(day, 'America/Los_Angeles')
                     let MonthAndDayNumber = formatDate(day, 'America/Los_Angeles' )
                     return (
@@ -68,13 +71,13 @@ export default function SchedulerBoard(props) {
                         </Fragment>
                     </div>
                     )
-                })}
+                }) : 'Cargando...'}
             </div>
         )
     } else {
         return (
             <div className='d-flex scheduler__Container'>
-                {props.days.map((day, index) => {
+                {props.days && props.scheduler ? props.days.map((day, index) => {
                     let dayName = getDay(day, 'America/Los_Angeles')
                     let MonthAndDayNumber = formatDate(day, 'America/Los_Angeles' )
                     return (
@@ -84,6 +87,7 @@ export default function SchedulerBoard(props) {
                             <h5>{dayName}</h5>
                         </div>
                         <Fragment>
+                            {/* TODO: show groups participants */}
                             {props.scheduler.map((h) => (
                                 <div
                                     className={`scheduler__cell ${groupSelection.includes(`${MonthAndDayNumber}${h}`) ? 'selected' : null}`}
@@ -95,7 +99,7 @@ export default function SchedulerBoard(props) {
                         </Fragment>
                     </div>
                     )
-                })}
+                }) : 'Cargando...'}
             </div>
         )
     }
