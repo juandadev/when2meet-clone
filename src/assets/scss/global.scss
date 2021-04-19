@@ -1,15 +1,18 @@
-@import './variables.scss';
-@import './input.scss';
-@import './button.scss';
+@import "./variables.scss";
+@import "./input.scss";
+@import "./button.scss";
 
 body {
-    font-family: $font;
-    background: $bg-colors;
-    color: $black;
-    font-weight: $light;
+  font-family: $font;
+  background: $bg-colors;
+  color: $black;
+  font-weight: $light;
+}
 
-    .title{
-        font-size: 18px;
-        margin: .5em 0;
-    }
+footer {
+  padding: 2rem 0;
+}
+
+footer p {
+  margin: 0;
 }

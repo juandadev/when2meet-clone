@@ -9,6 +9,7 @@
     "axios": "^0.21.1",
     "bootstrap": "^4.6.0",
     "date-fns": "^2.21.1",
+    "moment-timezone": "^0.5.33",
     "date-fns-tz": "^1.1.4",
     "node-sass": "^5.0.0",
     "prop-types": "^15.7.2",
