@@ -411,7 +411,16 @@ export default function Home() {
     deadLine: 'default',
     timeZone: 'default',
   });
-  const [selectedDays, setSelectedDays] = useState([]);
+  const [selectedDaysWeek, setSelectedDaysWeek] = useState({
+    monday: false,
+    tuesday: false,
+    wednesday: false,
+    thursday: false,
+    friday: false,
+    saturday: false,
+    sunday: false,
+  });
+  const [selectedDaysMonth, setSelectedDaysMonth] = useState([]);
   const [endDaysISO, setEndDaysISO] = useState([]);
   const [endDaysFormatted, setEndDaysFormatted] = useState([]);
 
@@ -430,7 +439,7 @@ export default function Home() {
     // TODO: Find a way to parse the date format we get from the calendar selected days
     // TODO: Prevent selecting days before todays date
     // TODO: Change the calendar timezone in relation to the one selected from the user
-    const inputSelectedDays = selectedDays.concat();
+    const inputSelectedDays = selectedDaysMonth.concat();
 
     if (selected) {
       const selectedIndex = inputSelectedDays.findIndex((selectedDay) =>
@@ -442,7 +451,7 @@ export default function Home() {
       inputSelectedDays.push(day);
     }
 
-    setSelectedDays(inputSelectedDays);
+    setSelectedDaysMonth(inputSelectedDays);
   }
 
   function handleChange(event) {
@@ -603,11 +612,14 @@ export default function Home() {
 
           {!isRecurrent ? (
             <DayPicker
-              selectedDays={selectedDays}
+              selectedDays={selectedDaysMonth}
               onDayClick={handleDayClick}
             />
           ) : (
-            <WeekDayPicker />
+            <WeekDayPicker
+              state={selectedDaysWeek}
+              manageState={setSelectedDaysWeek}
+            />
           )}
         </Col>
 

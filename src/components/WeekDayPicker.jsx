@@ -1,24 +1,13 @@
 import React, { useState } from 'react';
 import '../assets/scss/WeekDayPicker.scss';
 
-export default function WeekDayPicker() {
-  // TODO: JSOn de la data (ejemplo)
-  const [selectedDays, setSelectedDays] = useState({
-    monday: false,
-    tuesday: false,
-    wednesday: false,
-    thursday: false,
-    friday: false,
-    saturday: false,
-    sunday: false,
-  });
-
+export default function WeekDayPicker({ state, manageState }) {
   function selectedDay(event) {
     const { dataset } = event.target;
 
-    setSelectedDays({
-      ...selectedDays,
-      [dataset.day]: !selectedDays[dataset.day],
+    manageState({
+      ...state,
+      [dataset.day]: !state[dataset.day],
     });
   }
 
@@ -30,7 +19,7 @@ export default function WeekDayPicker() {
     friday,
     saturday,
     sunday,
-  } = selectedDays;
+  } = state;
 
   return (
     <div className="weekPicker__week">
