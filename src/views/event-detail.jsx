@@ -3,6 +3,7 @@ import Select from 'react-select'
 import DayPicker, {DateUtils} from 'react-day-picker';
 import 'react-day-picker/lib/style.css';
 import SchedulerBoard from '../components/schedulerBoard';
+import axios from 'axios';
 const { zonedTimeToUtc, utcToZonedTime, format } = require('date-fns-tz')
 
 
@@ -136,6 +137,12 @@ export default function EventDetail(props) {
         console.log('selectedDays', selectedDays)
         // TODO: get event Infotmation 
         setEventInformation(data)
+        const getEventInformation = async eventId => {
+            let res = await axios.get(`https://us-central1-nrggo-test.cloudfunctions.net/app/rest/events/${eventId}`)
+            console.log("Here is the event information =>",res.data)
+            return res.data
+        }
+        getEventInformation('RZdyWgL3C9fzfNmdvKLT')
     }, [])
 
     let handleDayClick = (day) => {
