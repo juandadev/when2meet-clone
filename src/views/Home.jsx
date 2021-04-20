@@ -5,6 +5,7 @@ import DayPicker, { DateUtils } from 'react-day-picker';
 import WeekDayPicker from '../components/WeekDayPicker';
 import Layout from './Layout';
 import axios from 'axios';
+import { useHistory } from 'react-router';
 
 const currentTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 const aryIannaTimeZones = [
@@ -433,6 +434,7 @@ function setTimeIntervals(interval, initialTime, finishTime) {
 }
 
 export default function Home() {
+  const history = useHistory()
   const [eventData, setEventData] = useState({
     name: '',
     safeWord: '',
@@ -538,7 +540,13 @@ export default function Home() {
         'https://us-central1-nrggo-test.cloudfunctions.net/app/rest/events',
         data
       )
-      .then((response) => console.log(response));
+      .then((response) => {
+        let id = response.data.eventId
+        history.push(`/event/${id}`);
+      })
+      .catch(error => {
+        console.error(error);
+      });
   }
 
   const {
