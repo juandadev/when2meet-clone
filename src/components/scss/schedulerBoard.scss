@@ -67,7 +67,7 @@
         left: 0;
         right: 0;
         bottom: 0;
-        z-index: 10;
+        // z-index: 10;
         background: transparent;
         &.selected {
             background: transparentize($color: $green, $amount: .6);
@@ -82,7 +82,7 @@
         left: 0;
         right: 0;
         bottom: 0;
-        z-index: 9;
+        // z-index: 2;
         &.selected {
             background: transparentize($color: $green, $amount: .6);
             background-blend-mode:darken;

@@ -7,6 +7,7 @@ import axios from 'axios';
 import { useParams } from 'react-router';
 const { zonedTimeToUtc, utcToZonedTime, format } = require('date-fns-tz')
 import Timezones from '../utils/timezones'
+import Layout from './Layout';
 
 const dummyEventData = {
     active: 'true',
@@ -186,13 +187,16 @@ export default function EventDetail(props) {
     }
     
     return (
-        <Fragment>
+        <Layout>
             {loading ? (
                 <h1 className='text-center'>Loading...</h1>
             ):(
                 <Fragment>
                     <div className='row no-gutters form__container px-3'>
-                        <div className='col-12 col-md-2'>
+                        <div className='col-12'>
+                            <h1 className='title main'>{eventInformation.name}</h1>
+                        </div>
+                        <div className='col-12 col-md-5'>
                             <label className='form-label'>To safe your vote, we need your name</label>
                             <input
                                 type='text'
@@ -202,15 +206,16 @@ export default function EventDetail(props) {
                                 value={name}
                             />
                         </div>
-                        <div className='col-12 col-md-2 ml-md-4 align-self-end'>
+                        <div className='col-12 col-md-5 ml-md-4 align-self-end'>
                             <Select 
                                 options={selectTimezones}
                                 className={'select'}
                             />
                         </div>
                     </div>
-                    <div className='row no-gutters justify-content-between px-md-3'>
-                        <div className='col-12 col-md-5' >
+                    {/* TODO: what if is a isRecurrent event */}
+                    <div className='row no-gutters  px-md-3'>
+                        <div className='col-12 col-md-5 mr-md-4' >
                             {isHidden ? (
                                 <Fragment>
                                     {eventInformation.days ? (
@@ -218,7 +223,7 @@ export default function EventDetail(props) {
                                             <h2 className='title px-3'>Your availability</h2>
                                             <SchedulerBoard
                                                 days={eventInformation.days}
-                                                scheduler={dummyHrs}
+                                                scheduler={eventInformation.hours}
                                                 onChange={handleSchedulerChange}
                                             />
                                         </Fragment>
@@ -232,8 +237,10 @@ export default function EventDetail(props) {
                                     <SchedulerBoard
                                         event={eventInformation}
                                         days={eventInformation.days}
-                                        scheduler={dummyHrs}
-                                        groupSelection={dummyGroupScheduler}
+                                        scheduler={eventInformation.hours}
+                                        // groupSelection={dummyGroupScheduler}
+                                        groupSelection={eventInformation.schedules}
+                                        timezone={'America/Los_Angeles'}
                                     />
                                 </Fragment>
                             )}
@@ -242,12 +249,19 @@ export default function EventDetail(props) {
                             <h2 className='title px-3'>Your group's availability</h2>
                             <SchedulerBoard
                                 days={eventInformation.days}
-                                scheduler={dummyHrs}
+                                scheduler={eventInformation.hours}
                                 // groupSelection={dummyGroupScheduler}
                                 groupSelection={eventInformation.schedules}
                                 timezone={'America/Los_Angeles'}
                             />
                         </div>
+
+                        <div className='col-12 col-md-5 mt-4'>
+                            <div role='button' className='btn' onClick={() => onScheduleSubmit()}>
+                                set schedules
+                            </div>
+                        </div>
+                        
                     </div>
 
                     <div className='btn__container d-flex d-md-none fixed-bottom'>
@@ -255,13 +269,11 @@ export default function EventDetail(props) {
                             {isHidden ? 'See group’s availability' : 'See your availability'}
                         </div>
                     </div>
-                    <div role='button' className='btn' onClick={() => onScheduleSubmit()}>
-                        set schedules
-                    </div>
+                    
                 </Fragment>
             )}
             
-        </Fragment>
+        </Layout>
     )
 }
 
