@@ -1,109 +1,13 @@
 import React, { Fragment, useEffect, useState } from 'react'
 import Select from 'react-select'
-import DayPicker, {DateUtils} from 'react-day-picker';
 import 'react-day-picker/lib/style.css';
 import SchedulerBoard from '../components/schedulerBoard';
+import SchedulerRecurrentBoard from '../components/schedulerRecurrentBoard';
+
 import axios from 'axios';
 import { useParams } from 'react-router';
-const { zonedTimeToUtc, utcToZonedTime, format } = require('date-fns-tz')
 import Timezones from '../utils/timezones'
 import Layout from './Layout';
-
-const dummyEventData = {
-    active: 'true',
-    id: 'RZdyWgL3C9fzfNmdvKLT',
-    name: "Parranda 1",
-    isRecurring: false,
-    hours: [
-        "12:00pm",
-        "12:30pm",
-        "01:00pm",
-        "01:30pm",
-        "02:00pm",
-        "02:30pm",
-        "03:00pm",
-        "03:30pm",
-        "04:00pm",
-        "04:30pm",
-        "05:00pm",
-        "05:30pm",
-    ],
-    days: [
-        "2021-04-12T17:00:00.000Z",
-        "2021-04-12T17:00:00.000Z",
-        "2021-04-04T17:00:00.000Z",
-        "2021-04-05T17:00:00.000Z",
-        "2021-04-12T17:00:00.000Z",
-        "2021-04-12T17:00:00.000Z",
-        "2021-04-04T17:00:00.000Z",
-        "2021-04-05T17:00:00.000Z",
-        "2021-04-12T17:00:00.000Z",
-        "2021-04-12T17:00:00.000Z",
-        "2021-04-04T17:00:00.000Z",
-        "2021-04-05T17:00:00.000Z",
-        "2021-04-12T17:00:00.000Z",
-        "2021-04-12T17:00:00.000Z",
-        "2021-04-04T17:00:00.000Z",
-        "2021-04-05T17:00:00.000Z",
-    ],
-    timezone: 'America/Los_Angeles',
-    dueDate: "2021-04-20T17:00:00.000Z",
-    createAt: "",
-    groupSchedules: [
-        {
-            name: "Anthony",
-            schedules: [
-                "Apr 1201:00pm",
-                "Apr 1201:30pm",
-                "Apr 0402:00pm",
-                "Apr 0402:30pm",
-                "Apr 0405:30pm",
-                "Apr 0503:00pm",
-                "Apr 0503:30pm",
-                "Apr 0504:30pm"
-            ]
-        },
-        {
-            name: "juanda",
-            schedules: [
-                "Apr 1601:00pm",
-                "Apr 1701:30pm",
-                "Apr 1802:00pm",
-                "Apr 0402:30pm",
-                "Apr 0405:30pm",
-                "Apr 0503:00pm",
-                "Apr 0503:30pm",
-                "Apr 0504:30pm"
-            ]
-        }
-    ]
-}
-
-const dummyHrs = [
-    "12:00pm",
-    "12:30pm",
-    "01:00pm",
-    "01:30pm",
-    "02:00pm",
-    "02:30pm",
-    "03:00pm",
-    "03:30pm",
-    "04:00pm",
-    "04:30pm",
-    "05:00pm",
-    "05:30pm",
-]
-
-let dummyGroupScheduler = [
-    "Apr 1201:00pm",
-    "Apr 1201:30pm",
-    "Apr 0402:00pm",
-    "Apr 0402:30pm",
-    "Apr 0405:30pm",
-    "Apr 0503:00pm",
-    "Apr 0503:30pm",
-    "Apr 0504:30pm"
-]
 
 export default function EventDetail(props) {
     const {id} = useParams()
@@ -114,6 +18,18 @@ export default function EventDetail(props) {
     const [selectTimezones, setSelectTimezones] = useState([])
     const [yourSelection, setYourSelection] = useState([])
     const [name, setName] = useState('')
+
+    const dummyRecurrentDAy = {
+        days: {
+            monday: false,
+            tuesday: false,
+            wednesday: false,
+            thursday: false,
+            friday: true,
+            saturday: true,
+            sunday: true,
+        },
+    }
 
     useEffect(() => {
         console.log('selectedDays', selectedDays)
@@ -137,24 +53,9 @@ export default function EventDetail(props) {
             console.error(`Ups!, there have been an error => ${err}`);
         })
         .finally(res => {
-            setTimeout(() => {
-                setLoading(false)
-            }, 1000);
+            setLoading(false)
         })
     }, [id])
-
-    // let handleDayClick = (day) => {
-    //     console.log(day)
-    //     if(selectedDays.includes(day)) {
-    //         console.log('Incluye el mismo dia, quitalo');
-    //         let currentDays =  selectedDays
-    //         let selectedIndex = currentDays.findIndex(e => DateUtils.isSameDay(e, day))
-    //         currentDays.splice(selectedIndex, 1);
-    //         setSelectedDays(currentDays)
-    //     } else {
-    //         setSelectedDays(selectedDays => [...selectedDays, day])
-    //     }   
-    // }
 
     let handleVisibility = () => {
         setIsHidden(!isHidden)
@@ -185,6 +86,8 @@ export default function EventDetail(props) {
         console.log('onScheduleSubmit', data);
         saveSchedules(id, data)
     }
+
+    
     
     return (
         <Layout>
@@ -213,47 +116,79 @@ export default function EventDetail(props) {
                             />
                         </div>
                     </div>
-                    {/* TODO: what if is a isRecurrent event */}
                     <div className='row no-gutters  px-md-3'>
                         <div className='col-12 col-md-5 mr-md-4' >
                             {isHidden ? (
                                 <Fragment>
+                                    {/* TODO: what if is a isRecurrent event */}
+
                                     {eventInformation.days ? (
                                         <Fragment>
                                             <h2 className='title px-3'>Your availability</h2>
-                                            <SchedulerBoard
-                                                days={eventInformation.days}
-                                                scheduler={eventInformation.hours}
-                                                onChange={handleSchedulerChange}
-                                            />
+                                            {eventInformation.isRecurrent ? (
+                                                <SchedulerRecurrentBoard
+                                                    days={eventInformation.days}
+                                                    scheduler={eventInformation.hours}
+                                                    onChange={handleSchedulerChange}
+                                                />
+                                            ) : (
+                                                <SchedulerBoard
+                                                    days={eventInformation.days}
+                                                    scheduler={eventInformation.hours}
+                                                    onChange={handleSchedulerChange}
+                                                />
+                                            )}
+                                            
                                         </Fragment>
                                     ) : (
-                                        <h6>Cargando...</h6>
+                                        <h6>Loading...</h6>
                                     )}
                                 </Fragment>
                             ) : (
                                 <Fragment>
                                     <h2 className='title px-3'>Your group's availability</h2>
+                                        {eventInformation.isRecurrent ? (
+                                            <SchedulerRecurrentBoard
+                                                days={eventInformation.days}
+                                                scheduler={eventInformation.hours}
+                                                onChange={handleSchedulerChange}
+                                                groupSelection={eventInformation.schedules}
+                                                timezone={'America/Los_Angeles'}
+                                            />
+                                        ) : (
+                                            <SchedulerBoard
+                                                event={eventInformation}
+                                                days={eventInformation.days}
+                                                scheduler={eventInformation.hours}
+                                                // groupSelection={dummyGroupScheduler}
+                                                groupSelection={eventInformation.schedules}
+                                                timezone={'America/Los_Angeles'}
+                                            />
+                                        )}
+                                    
+                                </Fragment>
+                            )}
+                        </div>
+                        <div className='col-12 col-md-5 d-none d-md-block' >
+                            <h2 className='title px-3'>Your group's availability</h2>
+                                {eventInformation.isRecurrent ? (
+                                    <SchedulerRecurrentBoard
+                                        days={eventInformation.days}
+                                        scheduler={eventInformation.hours}
+                                        onChange={handleSchedulerChange}
+                                        groupSelection={eventInformation.schedules}
+                                        timezone={'America/Los_Angeles'}
+                                    />
+                                ) : (
                                     <SchedulerBoard
-                                        event={eventInformation}
                                         days={eventInformation.days}
                                         scheduler={eventInformation.hours}
                                         // groupSelection={dummyGroupScheduler}
                                         groupSelection={eventInformation.schedules}
                                         timezone={'America/Los_Angeles'}
                                     />
-                                </Fragment>
-                            )}
-                        </div>
-                        <div className='col-12 col-md-5 d-none d-md-block' >
-                            <h2 className='title px-3'>Your group's availability</h2>
-                            <SchedulerBoard
-                                days={eventInformation.days}
-                                scheduler={eventInformation.hours}
-                                // groupSelection={dummyGroupScheduler}
-                                groupSelection={eventInformation.schedules}
-                                timezone={'America/Los_Angeles'}
-                            />
+                                )}
+                            
                         </div>
 
                         <div className='col-12 col-md-5 mt-4'>
