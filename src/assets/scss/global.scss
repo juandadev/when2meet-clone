@@ -16,3 +16,8 @@ footer {
 footer p {
   margin: 0;
 }
+
+.create-event__data__calendar .invalid-tooltip {
+  position: unset !important;
+  display: block !important;
+}
