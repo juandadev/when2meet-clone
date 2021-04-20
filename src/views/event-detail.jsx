@@ -199,7 +199,7 @@ export default function EventDetail(props) {
                             <div className='col-12 d-flex align-items-center'>
                                 <h1 className='title main'>{eventInformation.name}</h1>
                                 {!canEdit ? (
-                                    <div onClick={() => onEditClick()}>
+                                    <div className='ml-3 edit-btn' onClick={() => onEditClick()}>
                                         Edit event
                                     </div>
                                 ): null}
