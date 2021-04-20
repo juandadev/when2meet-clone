@@ -4,7 +4,6 @@ import Select from 'react-select';
 import SchedulerBoard from '../components/schedulerBoard';
 import axios from 'axios';
 import { useParams } from 'react-router';
-const { zonedTimeToUtc, utcToZonedTime, format } = require('date-fns-tz');
 import Timezones from '../utils/timezones';
 import 'react-day-picker/lib/style.css';
 
@@ -104,6 +103,8 @@ let dummyGroupScheduler = [
   'Apr 0504:30pm',
 ];
 
+const currentTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
 export default function EventDetail(props) {
   const { id } = useParams();
   const [selectedDays, setSelectedDays] = useState([]);
@@ -111,6 +112,7 @@ export default function EventDetail(props) {
   const [loading, setLoading] = useState(true);
   const [isHidden, setIsHidden] = useState(true);
   const [selectTimezones, setSelectTimezones] = useState([]);
+  const [selectedTimeZone, setSeletedTimeZone] = useState({});
   const [yourSelection, setYourSelection] = useState([]);
   const [name, setName] = useState('');
 
@@ -124,6 +126,8 @@ export default function EventDetail(props) {
         newTimezone,
       ]);
     });
+
+    setSeletedTimeZone({ value: currentTimeZone, label: currentTimeZone });
 
     // setEventInformation(id)
     const getEventInformation = async (eventId) => {
@@ -213,7 +217,12 @@ export default function EventDetail(props) {
               />
             </div>
             <div className="col-12 col-md-2 ml-md-4 align-self-end">
-              <Select options={selectTimezones} className={'select'} />
+              <Select
+                defaultValue={selectedTimeZone}
+                onChange={setSeletedTimeZone}
+                options={selectTimezones}
+                className={'select'}
+              />
             </div>
           </div>
           <div className="row no-gutters justify-content-between px-md-3">
