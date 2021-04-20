@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { format, formatISO } from 'date-fns';
+import { format, formatISO, eachMinuteOfInterval } from 'date-fns';
 import { Row, Col, Form, Button } from 'react-bootstrap';
 import DayPicker, { DateUtils } from 'react-day-picker';
 import WeekDayPicker from '../components/WeekDayPicker';
 import Layout from './Layout';
+import axios from 'axios';
 
 const currentTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 const aryIannaTimeZones = [
@@ -357,32 +358,36 @@ const aryIannaTimeZones = [
   'Africa/Johannesburg',
 ];
 const dayHours = [
-  '12:00am',
-  '01:00am',
-  '02:00am',
-  '03:00am',
-  '04:00am',
-  '05:00am',
-  '06:00am',
-  '07:00am',
-  '08:00am',
-  '09:00am',
-  '10:00am',
-  '11:00am',
-  '12:00pm',
-  '01:00pm',
-  '02:00pm',
-  '03:00pm',
-  '04:00pm',
-  '05:00pm',
-  '06:00pm',
-  '07:00pm',
-  '08:00pm',
-  '09:00pm',
-  '10:00pm',
-  '11:00pm',
+  [0, '12:00 am'],
+  [1, '01:00 am'],
+  [2, '02:00 am'],
+  [3, '03:00 am'],
+  [4, '04:00 am'],
+  [5, '05:00 am'],
+  [6, '06:00 am'],
+  [7, '07:00 am'],
+  [8, '08:00 am'],
+  [9, '09:00 am'],
+  [10, '10:00 am'],
+  [11, '11:00 am'],
+  [12, '12:00 pm'],
+  [13, '01:00 pm'],
+  [14, '02:00 pm'],
+  [15, '03:00 pm'],
+  [16, '04:00 pm'],
+  [17, '05:00 pm'],
+  [18, '06:00 pm'],
+  [19, '07:00 pm'],
+  [20, '08:00 pm'],
+  [21, '09:00 pm'],
+  [22, '10:00 pm'],
+  [23, '11:00 pm'],
 ];
 
+/**
+ * Calculates the surrounding 15 days after the user current day for the options of the survey end day
+ * @returns An array with two arrays: one for the days in ISO 8601 format and another one with the days formatted like 'April, Monday 1st'
+ */
 function getSurveyEndDays() {
   let todayInMillis = new Date().getTime();
   let surveyEndDaysISO = [];
@@ -399,6 +404,32 @@ function getSurveyEndDays() {
   });
 
   return [surveyEndDaysISO, surveyEndDaysFormatted];
+}
+
+/**
+ * This method was created with the eachMinuteOfInterval() function in date-fns library to easily get the hour intervals between the selected hours by the user
+ * @param {*} interval Steps the schedule going to follow
+ * @param {*} initialTime The initial hour of the event
+ * @param {*} finishTime  The finish hour of the event
+ * @returns An array with the current steps intervals and parsed hour format
+ */
+function setTimeIntervals(interval, initialTime, finishTime) {
+  //TODO: Change the way we do this with specific dates in calendar
+  let nextDay;
+
+  finishTime <= initialTime ? (nextDay = 2) : (nextDay = 1);
+
+  const result = eachMinuteOfInterval(
+    {
+      start: new Date(2021, 1, 1, initialTime, 0),
+      end: new Date(2021, 1, nextDay, finishTime, 0),
+    },
+    { step: interval }
+  );
+
+  const times = result.map((item) => format(item, 'hh:mmaaa'));
+
+  return times;
 }
 
 export default function Home() {
@@ -473,6 +504,43 @@ export default function Home() {
     });
   }
 
+  function handleSubmit(eventData) {
+    const {
+      name,
+      safeWord,
+      isRecurrent,
+      deadLine,
+      timeZone,
+      initialTime,
+      finishTime,
+      selectedDaysWeek,
+      selectedDaysMonth,
+    } = eventData;
+    const hours = setTimeIntervals(30, initialTime, finishTime);
+    let days;
+
+    isRecurrent
+      ? (days = selectedDaysWeek)
+      : (days = selectedDaysMonth.map((item) => formatISO(new Date(item))));
+
+    const data = {
+      name,
+      safeWord,
+      isRecurrent,
+      days,
+      hours,
+      deadLine,
+      timeZone,
+    };
+
+    axios
+      .post(
+        'https://us-central1-nrggo-test.cloudfunctions.net/app/rest/events',
+        data
+      )
+      .then((response) => console.log(response));
+  }
+
   const {
     name,
     safeWord,
@@ -540,8 +608,8 @@ export default function Home() {
                   >
                     <option value="default">Not earlier than</option>
                     {dayHours.map((hour, index) => (
-                      <option key={`init-hour-${index}`} value={hour}>
-                        {hour}
+                      <option key={`init-hour-${index}`} value={hour[0]}>
+                        {hour[1]}
                       </option>
                     ))}
                   </Form.Control>
@@ -558,8 +626,8 @@ export default function Home() {
                   >
                     <option value="default">Not later than</option>
                     {dayHours.map((hour, index) => (
-                      <option key={`finish-hour-${index}`} value={hour}>
-                        {hour}
+                      <option key={`finish-hour-${index}`} value={hour[0]}>
+                        {hour[1]}
                       </option>
                     ))}
                   </Form.Control>
@@ -624,7 +692,17 @@ export default function Home() {
         </Col>
 
         <Col xs={12} className="create-event__data__submit">
-          <Button>Create new event</Button>
+          <Button
+            onClick={() =>
+              handleSubmit({
+                ...eventData,
+                selectedDaysWeek,
+                selectedDaysMonth,
+              })
+            }
+          >
+            Create new event
+          </Button>
         </Col>
       </Row>
     </Layout>
