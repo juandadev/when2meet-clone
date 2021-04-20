@@ -71,13 +71,8 @@ app.post("/rest/schedules/:id", async (req, res) => {
   // let docRef = db.collection("EVENT").doc(req.params.id).collection("SCHEDULES")
   let docRef = db.collection("EVENT").doc(req.params.id)
 
-  functions.logger.log("Hello from info. Here's an object:", docRef)
-
-  let data = req.body
-  data.updatedAt = new Date()
-
   await docRef.update({
-    updatedAt: data.updatedAt,
+    updatedAt: new Date(),
     schedules: admin.firestore.FieldValue.arrayUnion({...req.body})
   })
   .then(response => {

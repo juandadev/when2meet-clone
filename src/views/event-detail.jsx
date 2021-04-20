@@ -122,7 +122,7 @@ export default function EventDetail(props) {
             setSelectTimezones(selectTimezones => [...selectTimezones, newTimezone])
         })
 
-        setEventInformation(id)
+        // setEventInformation(id)
         const getEventInformation = async eventId => {
             let res = await axios.get(`https://us-central1-nrggo-test.cloudfunctions.net/app/rest/events/${eventId}`)
             return res.data
@@ -165,7 +165,7 @@ export default function EventDetail(props) {
     }
 
     const saveSchedules = async (eventId, data) => {
-        let res = await axios.post(`https://us-central1-nrggo-test.cloudfunctions.net/app/rest/events/${eventId}`, data)
+        let res = await axios.post(`https://us-central1-nrggo-test.cloudfunctions.net/app/rest/schedules/${eventId}`, data)
         console.log('saveSchedules', res.data);
         return res.data
     }
@@ -173,10 +173,15 @@ export default function EventDetail(props) {
     let handleSchedulerChange = schedules => {
         // console.log('handleSchedulerChange', schedules);
         setYourSelection(schedules);
+    }
+
+    let onScheduleSubmit = () => {
+        // TODO: send timezone to be save in db
         const data = {
             name: name,
-            schedules: schedules
+            schedules: yourSelection
         }
+        console.log('onScheduleSubmit', data);
         saveSchedules(id, data)
     }
     
@@ -238,7 +243,9 @@ export default function EventDetail(props) {
                             <SchedulerBoard
                                 days={eventInformation.days}
                                 scheduler={dummyHrs}
-                                groupSelection={dummyGroupScheduler}
+                                // groupSelection={dummyGroupScheduler}
+                                groupSelection={eventInformation.schedules}
+                                timezone={'America/Los_Angeles'}
                             />
                         </div>
                     </div>
@@ -247,6 +254,9 @@ export default function EventDetail(props) {
                         <div className='btn' role='button' onClick={() => handleVisibility()}>
                             {isHidden ? 'See group’s availability' : 'See your availability'}
                         </div>
+                    </div>
+                    <div role='button' className='btn' onClick={() => onScheduleSubmit()}>
+                        set schedules
                     </div>
                 </Fragment>
             )}
