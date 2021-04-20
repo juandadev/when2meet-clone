@@ -8,13 +8,10 @@ export default function SchedulerBoard(props) {
     let groupSelection = props.groupSelection
 
     useEffect(() => {
-    }, [props])
+        console.log('Effect', selection);
+        // props.onChange(selection)
+    }, [selection])
 
-
-    // let handleChange = (newSelection) => {
-    //     setCount(count++)
-    //     setSelection(newSelection);
-    // }
 
     let formatDate = (day, timezone) => {
         let date = new Date(day)
@@ -33,17 +30,18 @@ export default function SchedulerBoard(props) {
     }
 
     let handleOnClick = (day, hrs) => {
-
         let curretSelection = selection
         
         if(curretSelection.includes(`${day}${hrs}`)){
             let indexToRemove = curretSelection.findIndex(e => e === `${day}${hrs}`)
             curretSelection.splice(indexToRemove, 1);
             setSelection(selection => [...curretSelection])
-            console.log(`removed => ${day}${hrs}`, selection);
+            // console.log(`removed => ${day}${hrs}`, selection);
+            props.onChange([...curretSelection])
         } else {
             setSelection(selection => [...selection, `${day}${hrs}`])
-            console.log(`added => ${day}${hrs}`, selection);
+            // console.log(`added => ${day}${hrs}`, selection);
+            props.onChange([...curretSelection, `${day}${hrs}`])
         }
     }
 

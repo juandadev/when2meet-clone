@@ -4,6 +4,7 @@ const admin = require("firebase-admin");
 const cors = require("cors");
 
 const serviceAccount = require("./credentials.json");
+const { firestore } = require("firebase-admin");
 
 const app = express();
 admin.initializeApp({
@@ -11,6 +12,7 @@ admin.initializeApp({
 });
 
 const db = admin.firestore();
+const FieldValue = admin.firestore.FieldValue;
 app.use(cors());
 
 
@@ -62,7 +64,28 @@ app.post("/rest/events/:id", async (req, res) => {
   .catch(error => {
     return res.status(500).json({message: error});
   })
+});
 
+// add user schedules to event
+app.post("/rest/schedules/:id", async (req, res) => {
+  // let docRef = db.collection("EVENT").doc(req.params.id).collection("SCHEDULES")
+  let docRef = db.collection("EVENT").doc(req.params.id)
+
+  functions.logger.log("Hello from info. Here's an object:", docRef)
+
+  let data = req.body
+  data.updatedAt = new Date()
+
+  await docRef.update({
+    updatedAt: data.updatedAt,
+    schedules: admin.firestore.FieldValue.arrayUnion({...req.body})
+  })
+  .then(response => {
+    return res.status(200).json({message: "Success"});
+  })
+  .catch(error => {
+    return res.status(500).json({message: error});
+  })
 });
 
 

@@ -4,16 +4,11 @@ import DayPicker, {DateUtils} from 'react-day-picker';
 import 'react-day-picker/lib/style.css';
 import SchedulerBoard from '../components/schedulerBoard';
 import axios from 'axios';
+import { useParams } from 'react-router';
 const { zonedTimeToUtc, utcToZonedTime, format } = require('date-fns-tz')
+import Timezones from '../utils/timezones'
 
-
-const options = [
-    { value: 'chocolate', label: 'Chocolate' },
-    { value: 'strawberry', label: 'Strawberry' },
-    { value: 'vanilla', label: 'Vanilla' }
-]
-
-const data = {
+const dummyEventData = {
     active: 'true',
     id: 'RZdyWgL3C9fzfNmdvKLT',
     name: "Parranda 1",
@@ -83,25 +78,6 @@ const data = {
     ]
 }
 
-const dummyDays = [
-    "2021-04-12T17:00:00.000Z",
-    "2021-04-12T17:00:00.000Z",
-    "2021-04-04T17:00:00.000Z",
-    "2021-04-05T17:00:00.000Z",
-    "2021-04-12T17:00:00.000Z",
-    "2021-04-12T17:00:00.000Z",
-    "2021-04-04T17:00:00.000Z",
-    "2021-04-05T17:00:00.000Z",
-    "2021-04-12T17:00:00.000Z",
-    "2021-04-12T17:00:00.000Z",
-    "2021-04-04T17:00:00.000Z",
-    "2021-04-05T17:00:00.000Z",
-    "2021-04-12T17:00:00.000Z",
-    "2021-04-12T17:00:00.000Z",
-    "2021-04-04T17:00:00.000Z",
-    "2021-04-05T17:00:00.000Z",
-]
-
 const dummyHrs = [
     "12:00pm",
     "12:30pm",
@@ -129,101 +105,152 @@ let dummyGroupScheduler = [
 ]
 
 export default function EventDetail(props) {
+    const {id} = useParams()
     const [selectedDays, setSelectedDays] = useState([])
     const [eventInformation, setEventInformation] = useState({})
+    const [loading, setLoading] = useState(true)
     const [isHidden, setIsHidden] = useState(true)
+    const [selectTimezones, setSelectTimezones] = useState([])
+    const [yourSelection, setYourSelection] = useState([])
+    const [name, setName] = useState('')
 
     useEffect(() => {
         console.log('selectedDays', selectedDays)
-        // TODO: get event Infotmation 
-        setEventInformation(data)
+
+        Timezones.map(t => {
+            let newTimezone = {value: t, label: t}
+            setSelectTimezones(selectTimezones => [...selectTimezones, newTimezone])
+        })
+
+        setEventInformation(id)
         const getEventInformation = async eventId => {
             let res = await axios.get(`https://us-central1-nrggo-test.cloudfunctions.net/app/rest/events/${eventId}`)
-            console.log("Here is the event information =>",res.data)
             return res.data
         }
-        getEventInformation('RZdyWgL3C9fzfNmdvKLT')
-    }, [])
+        getEventInformation(id)
+        .then(res => {
+            console.log(`getEventInformation success! =>`, res.data);
+            setEventInformation(res.data)
+        })
+        .catch(err => {
+            console.error(`Ups!, there have been an error => ${err}`);
+        })
+        .finally(res => {
+            setTimeout(() => {
+                setLoading(false)
+            }, 1000);
+        })
+    }, [id])
 
-    let handleDayClick = (day) => {
-        console.log(day)
-        if(selectedDays.includes(day)) {
-            console.log('Incluye el mismo dia, quitalo');
-            let currentDays =  selectedDays
-            let selectedIndex = currentDays.findIndex(e => DateUtils.isSameDay(e, day))
-            currentDays.splice(selectedIndex, 1);
-            setSelectedDays(currentDays)
-        } else {
-            setSelectedDays(selectedDays => [...selectedDays, day])
-        }   
-    }
+    // let handleDayClick = (day) => {
+    //     console.log(day)
+    //     if(selectedDays.includes(day)) {
+    //         console.log('Incluye el mismo dia, quitalo');
+    //         let currentDays =  selectedDays
+    //         let selectedIndex = currentDays.findIndex(e => DateUtils.isSameDay(e, day))
+    //         currentDays.splice(selectedIndex, 1);
+    //         setSelectedDays(currentDays)
+    //     } else {
+    //         setSelectedDays(selectedDays => [...selectedDays, day])
+    //     }   
+    // }
 
     let handleVisibility = () => {
         setIsHidden(!isHidden)
     }
 
+    let handleInputChange = e => {
+        let value = e.target.value
+        setName(value)
+    }
+
+    const saveSchedules = async (eventId, data) => {
+        let res = await axios.post(`https://us-central1-nrggo-test.cloudfunctions.net/app/rest/events/${eventId}`, data)
+        console.log('saveSchedules', res.data);
+        return res.data
+    }
+
+    let handleSchedulerChange = schedules => {
+        // console.log('handleSchedulerChange', schedules);
+        setYourSelection(schedules);
+        const data = {
+            name: name,
+            schedules: schedules
+        }
+        saveSchedules(id, data)
+    }
+    
     return (
         <Fragment>
-            <div className='row no-gutters form__container px-3'>
-                <div className='col-12 col-md-2'>
-                    <label className='form-label'>To safe your vote, we need your name</label>
-                    <input
-                        type='text'
-                        className='form-control input'
-                        placeholder='Type your name here.'
-                    />
-                </div>
-                <div className='col-12 col-md-2 ml-md-4 align-self-end'>
-                    <Select 
-                        options={options}
-                        className={'select'}
-                    />
-                </div>
-            </div>
-            <div className='row no-gutters justify-content-between px-md-3'>
-                <div className='col-12 col-md-5' >
-                    
-                    {isHidden ? (
-                        <Fragment>
-                            {eventInformation.days ? (
+            {loading ? (
+                <h1 className='text-center'>Loading...</h1>
+            ):(
+                <Fragment>
+                    <div className='row no-gutters form__container px-3'>
+                        <div className='col-12 col-md-2'>
+                            <label className='form-label'>To safe your vote, we need your name</label>
+                            <input
+                                type='text'
+                                className='form-control input'
+                                placeholder='Type your name here.'
+                                onChange={handleInputChange}
+                                value={name}
+                            />
+                        </div>
+                        <div className='col-12 col-md-2 ml-md-4 align-self-end'>
+                            <Select 
+                                options={selectTimezones}
+                                className={'select'}
+                            />
+                        </div>
+                    </div>
+                    <div className='row no-gutters justify-content-between px-md-3'>
+                        <div className='col-12 col-md-5' >
+                            {isHidden ? (
                                 <Fragment>
-                                    <h2 className='title px-3'>Your availability</h2>
-                                    <SchedulerBoard
-                                        days={eventInformation.days}
-                                        scheduler={eventInformation.hours}
-                                    />
+                                    {eventInformation.days ? (
+                                        <Fragment>
+                                            <h2 className='title px-3'>Your availability</h2>
+                                            <SchedulerBoard
+                                                days={eventInformation.days}
+                                                scheduler={dummyHrs}
+                                                onChange={handleSchedulerChange}
+                                            />
+                                        </Fragment>
+                                    ) : (
+                                        <h6>Cargando...</h6>
+                                    )}
                                 </Fragment>
                             ) : (
-                                <h6>Cargando...</h6>
+                                <Fragment>
+                                    <h2 className='title px-3'>Your group's availability</h2>
+                                    <SchedulerBoard
+                                        event={eventInformation}
+                                        days={eventInformation.days}
+                                        scheduler={dummyHrs}
+                                        groupSelection={dummyGroupScheduler}
+                                    />
+                                </Fragment>
                             )}
-                        </Fragment>
-                    ) : (
-                        <Fragment>
+                        </div>
+                        <div className='col-12 col-md-5 d-none d-md-block' >
                             <h2 className='title px-3'>Your group's availability</h2>
                             <SchedulerBoard
                                 days={eventInformation.days}
-                                scheduler={eventInformation.hours}
+                                scheduler={dummyHrs}
                                 groupSelection={dummyGroupScheduler}
                             />
-                        </Fragment>
-                    )}
-                </div>
-                <div className='col-12 col-md-5 d-none d-md-block' >
-                    <h2 className='title px-3'>Your group's availability</h2>
-                    <SchedulerBoard
-                        days={eventInformation.days}
-                        scheduler={eventInformation.hours}
-                        groupSelection={dummyGroupScheduler}
-                    />
-                </div>
-            </div>
+                        </div>
+                    </div>
 
-            <div className='btn__container d-flex d-md-none fixed-bottom'>
-                <div className='btn' role='button' onClick={() => handleVisibility()}>
-                    {isHidden ? 'See group’s availability' : 'See your availability'}
-                </div>
-            </div>
-
+                    <div className='btn__container d-flex d-md-none fixed-bottom'>
+                        <div className='btn' role='button' onClick={() => handleVisibility()}>
+                            {isHidden ? 'See group’s availability' : 'See your availability'}
+                        </div>
+                    </div>
+                </Fragment>
+            )}
+            
         </Fragment>
     )
 }
