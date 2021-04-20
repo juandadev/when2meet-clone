@@ -60,9 +60,9 @@ function getSurveyEndDays() {
 
 /**
  * This method was created with the eachMinuteOfInterval() function in date-fns library to easily get the hour intervals between the selected hours by the user
- * @param {*} interval Steps the schedule going to follow
- * @param {*} initialTime The initial hour of the event
- * @param {*} finishTime  The finish hour of the event
+ * @param {number} interval Steps the schedule going to follow
+ * @param {number} initialTime The initial hour of the event (0 - 23)
+ * @param {number} finishTime  The finish hour of the event (0 - 23)
  * @returns An array with the current steps intervals and parsed hour format
  */
 function setTimeIntervals(interval, initialTime, finishTime) {
