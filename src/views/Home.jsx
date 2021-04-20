@@ -4,6 +4,7 @@ import { Row, Col, Form, Button } from 'react-bootstrap';
 import DayPicker, { DateUtils } from 'react-day-picker';
 import WeekDayPicker from '../components/WeekDayPicker';
 import Layout from './Layout';
+import axios from 'axios';
 
 const currentTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 const aryIannaTimeZones = [
@@ -503,6 +504,43 @@ export default function Home() {
     });
   }
 
+  function handleSubmit(eventData) {
+    const {
+      name,
+      safeWord,
+      isRecurrent,
+      deadLine,
+      timeZone,
+      initialTime,
+      finishTime,
+      selectedDaysWeek,
+      selectedDaysMonth,
+    } = eventData;
+    const hours = setTimeIntervals(30, initialTime, finishTime);
+    let days;
+
+    isRecurrent
+      ? (days = selectedDaysWeek)
+      : (days = selectedDaysMonth.map((item) => formatISO(new Date(item))));
+
+    const data = {
+      name,
+      safeWord,
+      isRecurrent,
+      days,
+      hours,
+      deadLine,
+      timeZone,
+    };
+
+    axios
+      .post(
+        'https://us-central1-nrggo-test.cloudfunctions.net/app/rest/events',
+        data
+      )
+      .then((response) => console.log(response));
+  }
+
   const {
     name,
     safeWord,
@@ -654,7 +692,17 @@ export default function Home() {
         </Col>
 
         <Col xs={12} className="create-event__data__submit">
-          <Button>Create new event</Button>
+          <Button
+            onClick={() =>
+              handleSubmit({
+                ...eventData,
+                selectedDaysWeek,
+                selectedDaysMonth,
+              })
+            }
+          >
+            Create new event
+          </Button>
         </Col>
       </Row>
     </Layout>
