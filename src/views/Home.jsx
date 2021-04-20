@@ -535,6 +535,8 @@ export default function Home() {
       timeZone,
     };
 
+    console.log(data);
+
     axios
       .post(
         'https://us-central1-nrggo-test.cloudfunctions.net/app/rest/events',

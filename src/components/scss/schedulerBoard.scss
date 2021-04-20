@@ -70,8 +70,8 @@
         // z-index: 10;
         background: transparent;
         &.selected {
-            background: transparentize($color: $green, $amount: .6);
-            background-blend-mode: darken;
+            background: transparentize($color: $green, $amount: .4);
+            background-blend-mode: multiply;
         }
     }
 
@@ -84,8 +84,8 @@
         bottom: 0;
         // z-index: 2;
         &.selected {
-            background: transparentize($color: $green, $amount: .6);
-            background-blend-mode:darken;
+            background: transparentize($color: $green, $amount: .4);
+            background-blend-mode: multiply;
         }
     }
 }
