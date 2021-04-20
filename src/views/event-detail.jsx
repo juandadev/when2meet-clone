@@ -20,6 +20,9 @@ export default function EventDetail(props) {
     const [name, setName] = useState('')
     const [selectedTimezone, setSelectedTimezone] = useState(null)
     const [userTimezone, setUserTimezone] = useState('')
+    const [canEdit, setCanEdit] = useState(false)
+    const [eventsDate, setEventsDate] = useState('')
+    const [eventsLink, setEventsLink] = useState('')
 
     useEffect(() => {
         console.log('selectedDays', selectedDays)
@@ -98,8 +101,81 @@ export default function EventDetail(props) {
                 })
             })
         }
-
     }
+
+    let handleEventsDateOnChange = e => {
+        setEventsDate(e.target.value)
+    }
+
+    let handleEventsLinkOnChange = e => {
+        setEventsLink(e.target.value)
+    }
+
+
+    let editEventComponent = () => (
+        <div className='row no-gutters'>
+            <div className='col-12 col-md-12'>
+                <label className='form-label'>Enter the date of the Event.</label>
+                <input
+                    type='text'
+                    className='form-control input'
+                    placeholder='Enter the date of the event.'
+                    onChange={handleEventsDateOnChange}
+                    value={eventsDate}
+                />
+            </div>
+            <div className='col-12 col-md-12 mt-2'>
+                <label className='form-label'>Where will the event be? (link)</label>
+                <input
+                    type='text'
+                    className='form-control input'
+                    placeholder='Enter the link of the meeting.'
+                    onChange={handleEventsLinkOnChange}
+                    value={eventsLink}
+                />
+            </div>
+            <div className='col-12 mt-2'>
+                <div role='buttom' className='btn' onClick={() => handleEventOnchange()}>
+                    Guardar
+                </div>
+            </div>
+        </div>
+    )
+
+    let onEditClick = () => {
+        let safeword = prompt("What is the safe word?")
+        if(safeword === eventInformation.safeWord){
+            alert('safe word correct.')
+            setCanEdit(!canEdit)
+        } else {
+            alert('safe word is wrong.')
+        }
+        
+    }
+
+    let saveEventchanges = async (eventId, data) => {
+        let res = await axios.post(`https://us-central1-nrggo-test.cloudfunctions.net/app/rest/events/close/${eventId}`, data)
+        return res.data
+    }
+
+    let handleEventOnchange = () => {
+        setLoading(true)
+        let data = {
+            eventsDate: eventsDate,
+            eventsLink: eventsLink
+        }
+        saveEventchanges(id, data)
+        .then(res => {
+            setCanEdit(false)
+        })
+        .catch(err => {
+            console.error(err);
+        })
+        .finally(res => {
+            setLoading(false)
+        })
+        
+    } 
 
     if(!eventInformation.active) {
         return(
@@ -107,8 +183,7 @@ export default function EventDetail(props) {
                 <div className='row'>
                     <div className='col-12'>
                         <h2>{eventInformation.name}</h2>
-                        <p>The Event will be on Thu Apr 13 at 12:00pm, to enter the event go to:
-                        *link*</p>
+                        <p>The Event will be on {eventInformation.eventsDate}, to enter the event enter here {`${eventInformation.eventsLink}`}</p>
                     </div>
                 </div>
             </Layout>
@@ -121,81 +196,110 @@ export default function EventDetail(props) {
                 ):(
                     <Fragment>
                         <div className='row no-gutters form__container px-3'>
-                            <div className='col-12'>
+                            <div className='col-12 d-flex align-items-center'>
                                 <h1 className='title main'>{eventInformation.name}</h1>
+                                {!canEdit ? (
+                                    <div onClick={() => onEditClick()}>
+                                        Edit event
+                                    </div>
+                                ): null}
                             </div>
-                            <div className='col-12 col-md-5'>
-                                <label className='form-label'>To safe your vote, we need your name</label>
-                                <input
-                                    type='text'
-                                    className='form-control input'
-                                    placeholder='Type your name here.'
-                                    onChange={handleInputChange}
-                                    value={name}
-                                />
-                            </div>
-                            <div className='col-12 col-md-5 ml-md-4 align-self-end'>
-                                <Select 
-                                    options={selectTimezones}
-                                    className={'select'}
-                                    value={selectedTimezone}
-                                    onChange={handleSelectTimezone}
-                                />
-                            </div>
+
+                            {!canEdit ? (
+                                <Fragment>
+                                    <div className='col-12 col-md-5'>
+                                        <label className='form-label'>To safe your vote, we need your name</label>
+                                        <input
+                                            type='text'
+                                            className='form-control input'
+                                            placeholder='Type your name here.'
+                                            onChange={handleInputChange}
+                                            value={name}
+                                        />
+                                    </div>
+                                    <div className='col-12 col-md-5 ml-md-4 align-self-end'>
+                                        <Select 
+                                            options={selectTimezones}
+                                            className={'select'}
+                                            value={selectedTimezone}
+                                            onChange={handleSelectTimezone}
+                                        />
+                                    </div>
+                                </Fragment>
+                            ) : (
+                                null
+                            )}
+    
                         </div>
+
                         <div className='row no-gutters  px-md-3'>
                             <div className='col-12 col-md-5 mr-md-4' >
-                                {isHidden ? (
+                                {!canEdit ? (
                                     <Fragment>
-                                        {/* TODO: what if is a isRecurrent event */}
-
-                                        {eventInformation.days ? (
+                                        {/* Mobile view */}
+                                        {isHidden ? (
                                             <Fragment>
-                                                <h2 className='title px-3'>Your availability</h2>
-                                                {eventInformation.isRecurrent ? (
-                                                    <SchedulerRecurrentBoard
-                                                        days={eventInformation.days}
-                                                        scheduler={eventInformation.hours}
-                                                        onChange={handleSchedulerChange}
-                                                    />
-                                                ) : (
-                                                    <SchedulerBoard
-                                                        days={eventInformation.days}
-                                                        scheduler={eventInformation.hours}
-                                                        onChange={handleSchedulerChange}
-                                                    />
-                                                )}
-                                                
+                                                {eventInformation.days ? (
+                                                    <Fragment>
+                                                        <h2 className='title px-3'>Your availability</h2>
+                                                        {eventInformation.isRecurrent ? (
+                                                            <SchedulerRecurrentBoard
+                                                                days={eventInformation.days}
+                                                                scheduler={eventInformation.hours}
+                                                                onChange={handleSchedulerChange}
+                                                            />
+                                                        ) : (
+                                                            <SchedulerBoard
+                                                                days={eventInformation.days}
+                                                                scheduler={eventInformation.hours}
+                                                                onChange={handleSchedulerChange}
+                                                            />
+                                                        )}
+                                                        
+                                                    </Fragment>
+                                                ) : (null)}
+                                                <div className='col-12 col-md-5 mt-4 d-flex d-md-none'>
+                                                    <div role='button' className='btn' onClick={() => onScheduleSubmit()}>
+                                                        Set schedules
+                                                    </div>
+                                                </div>
                                             </Fragment>
                                         ) : (
-                                            <h6>Loading...</h6>
+                                            <Fragment>
+                                                <h2 className='title px-3'>Your group's availability</h2>
+                                                    {eventInformation.isRecurrent ? (
+                                                        <SchedulerRecurrentBoard
+                                                            days={eventInformation.days}
+                                                            scheduler={eventInformation.hours}
+                                                            onChange={handleSchedulerChange}
+                                                            groupSelection={eventInformation.schedules}
+                                                            timezone={eventInformation.timeZone}
+                                                        />
+                                                    ) : (
+                                                        <SchedulerBoard
+                                                            event={eventInformation}
+                                                            days={eventInformation.days}
+                                                            scheduler={eventInformation.hours}
+                                                            groupSelection={eventInformation.schedules}
+                                                            timezone={eventInformation.timeZone}
+                                                        />
+                                                    )}
+                                            </Fragment>
                                         )}
+                                        <div className='col-12 col-md-12 mt-4 d-none d-md-flex p-0'>
+                                            <div role='button' className='btn' onClick={() => onScheduleSubmit()}>
+                                                set schedules
+                                            </div>
+                                        </div>
                                     </Fragment>
                                 ) : (
                                     <Fragment>
-                                        <h2 className='title px-3'>Your group's availability</h2>
-                                            {eventInformation.isRecurrent ? (
-                                                <SchedulerRecurrentBoard
-                                                    days={eventInformation.days}
-                                                    scheduler={eventInformation.hours}
-                                                    onChange={handleSchedulerChange}
-                                                    groupSelection={eventInformation.schedules}
-                                                    timezone={'America/Los_Angeles'}
-                                                />
-                                            ) : (
-                                                <SchedulerBoard
-                                                    event={eventInformation}
-                                                    days={eventInformation.days}
-                                                    scheduler={eventInformation.hours}
-                                                    // groupSelection={dummyGroupScheduler}
-                                                    groupSelection={eventInformation.schedules}
-                                                    timezone={'America/Los_Angeles'}
-                                                />
-                                            )}
-                                        
+                                        {editEventComponent()}
                                     </Fragment>
                                 )}
+                                
                             </div>
+
                             <div className='col-12 col-md-5 d-none d-md-block' >
                                 <h2 className='title px-3'>Your group's availability</h2>
                                     {eventInformation.isRecurrent ? (
@@ -204,25 +308,19 @@ export default function EventDetail(props) {
                                             scheduler={eventInformation.hours}
                                             onChange={handleSchedulerChange}
                                             groupSelection={eventInformation.schedules}
-                                            timezone={'America/Los_Angeles'}
+                                            timezone={eventInformation.timeZone}
                                         />
                                     ) : (
                                         <SchedulerBoard
                                             days={eventInformation.days}
                                             scheduler={eventInformation.hours}
-                                            // groupSelection={dummyGroupScheduler}
                                             groupSelection={eventInformation.schedules}
-                                            timezone={'America/Los_Angeles'}
+                                            timezone={eventInformation.timeZone}
                                         />
                                     )}
-                                
                             </div>
 
-                            <div className='col-12 col-md-5 mt-4'>
-                                <div role='button' className='btn' onClick={() => onScheduleSubmit()}>
-                                    set schedules
-                                </div>
-                            </div>
+                            
                             
                         </div>
 

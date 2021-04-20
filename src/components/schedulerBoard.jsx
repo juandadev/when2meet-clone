@@ -55,67 +55,35 @@ export default function SchedulerBoard(props) {
                     let dayName = getDay(day, 'America/Los_Angeles')
                     let MonthAndDayNumber = formatDate(day, 'America/Los_Angeles' )
                     return (
-                        <div className='scheduler__day--column'>
-                        <div className='scheduler__day--header'>
-                            <h6>{MonthAndDayNumber}</h6>
-                            <h5>{dayName}</h5>
+                        <div key={`${day}${index}`} className='scheduler__day--column'>
+                            <div className='scheduler__day--header'>
+                                <h6>{MonthAndDayNumber}</h6>
+                                <h5>{dayName}</h5>
+                            </div>
+                            <Fragment>
+                                
+                                {props.scheduler.map((h) => (
+                                    <div key={`${h}${day}`}
+                                        className={`scheduler__cell ${selection.includes(`${MonthAndDayNumber}${h}`) ? 'selected' : null}`}
+                                        onClick={() => handleOnClick(MonthAndDayNumber, h)}
+                                    >
+                                        {index === 0 ? `${h.includes("30") ? '' : h}` : null }
+                                    </div>
+                                ))}
+                            </Fragment>
                         </div>
-                        <Fragment>
-                            
-                            {props.scheduler.map((h) => (
-                                <div
-                                    className={`scheduler__cell ${selection.includes(`${MonthAndDayNumber}${h}`) ? 'selected' : null}`}
-                                    onClick={() => handleOnClick(MonthAndDayNumber, h)}
-                                >
-                                    {index === 0 ? `${h.includes("30") ? '' : h}` : null }
-                                </div>
-                            ))}
-                        </Fragment>
-                    </div>
                     )
-                }) : 'Cargando...'}
+                }) : null}
             </div>
         )
     } else {
         return (
-            // desktop view
-            // <div className='d-flex scheduler__Container'>
-            //     {props.groupSelection.map(person => {
-            //         if(props.days && props.scheduler) {
-            //             return props.days.map((day,index) => {
-            //                 let dayName = getDay(day, props.timezone)
-            //                 let MonthAndDayNumber = formatDate(day, props.timezone )
-            //                 return (
-            //                     <div className='scheduler__day--column'>
-            //                         <div className='scheduler__day--header'>
-            //                             <h6>{MonthAndDayNumber}</h6>
-            //                             <h5>{dayName}</h5>
-            //                         </div>
-            //                         <Fragment>
-            //                             {/* TODO: show groups participants */}
-            //                             {props.scheduler.map((h) => (
-            //                                 <div
-            //                                     className={`scheduler__cell ${person.schedules.includes(`${MonthAndDayNumber}${h}`) ? 'selected' : null}`}
-            //                                     // onClick={() => handleOnClick(MonthAndDayNumber, h)}
-            //                                 >
-            //                                     {index === 0 ? `${h.includes("30") ? '' : h}` : null }
-            //                                 </div>
-            //                             ))}
-            //                         </Fragment>
-            //                     </div>
-            //                 )
-            //             })
-            //         }
-            //     })}
-                
-            // </div>
-
             <div className='d-flex scheduler__Container'>
                 {props.days && props.scheduler ? props.days.map((day, index) => {
                     let dayName = getDay(day, 'America/Los_Angeles')
                     let MonthAndDayNumber = formatDate(day, 'America/Los_Angeles' )
                     return (
-                        <div className='scheduler__day--column position-relative'>
+                        <div key={`${day}${index}`} className='scheduler__day--column position-relative'>
                             <div className='scheduler__day--header'>
                                 <h6>{MonthAndDayNumber}</h6>
                                 <h5>{dayName}</h5>
@@ -123,9 +91,9 @@ export default function SchedulerBoard(props) {
                             <Fragment>
                                 {/* TODO: show groups participants */}
                                 {props.scheduler.map((h) => (
-                                    <div className='cell__container position-relative'>
+                                    <div key={`${day}${h}`} className='cell__container position-relative'>
                                         {props.groupSelection.map((person, pindex) => (
-                                            <div
+                                            <div key={`${person}${h}${pindex}`}
                                                 className={`scheduler__cell ${pindex === 0 ? 'cell-relative' : 'cell-absolute'} ${person.schedules.includes(`${MonthAndDayNumber}${h}`) ? 'selected' : null}`}
                                             > 
                                                 {index === 0 && pindex === 0 ? `${h.includes("30") ? '' : h}` : null }
