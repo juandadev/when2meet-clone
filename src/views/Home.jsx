@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { format, formatISO, eachMinuteOfInterval } from 'date-fns';
+import { zonedTimeToUtc } from 'date-fns-tz';
 import { Row, Col, Form, Button } from 'react-bootstrap';
 import DayPicker, { DateUtils } from 'react-day-picker';
 import WeekDayPicker from '../components/WeekDayPicker';
@@ -65,21 +66,42 @@ function getSurveyEndDays() {
  * @param {number} finishTime  The finish hour of the event (0 - 23)
  * @returns An array with the current steps intervals and parsed hour format
  */
-function setTimeIntervals(interval, initialTime, finishTime) {
+function setTimeIntervals(interval, initialTime, finishTime, timeZone) {
   //TODO: Change the way we do this with specific dates in calendar
   let nextDay;
+  const todaysDate = new Date();
 
-  finishTime <= initialTime ? (nextDay = 2) : (nextDay = 1);
+  finishTime <= initialTime
+    ? (nextDay = todaysDate.getDay() + 1)
+    : (nextDay = todaysDate.getDay());
 
   const result = eachMinuteOfInterval(
     {
-      start: new Date(2021, 1, 1, initialTime, 0),
-      end: new Date(2021, 1, nextDay, finishTime, 0),
+      start: zonedTimeToUtc(
+        new Date(
+          todaysDate.getFullYear(),
+          todaysDate.getMonth(),
+          todaysDate.getDay(),
+          initialTime,
+          0
+        ),
+        timeZone
+      ),
+      end: zonedTimeToUtc(
+        new Date(
+          todaysDate.getFullYear(),
+          todaysDate.getMonth(),
+          nextDay,
+          finishTime,
+          0
+        ),
+        timeZone
+      ),
     },
     { step: interval }
   );
 
-  const times = result.map((item) => format(item, 'hh:mmaaa'));
+  const times = result.map((item) => item);
 
   return times;
 }
@@ -227,7 +249,7 @@ export default function Home() {
         selectedDaysWeek,
         selectedDaysMonth,
       } = eventData;
-      const hours = setTimeIntervals(30, initialTime, finishTime);
+      const hours = setTimeIntervals(30, initialTime, finishTime, timeZone);
       let days;
 
       isRecurrent

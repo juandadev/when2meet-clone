@@ -6,12 +6,14 @@ import SchedulerRecurrentBoard from '../components/schedulerRecurrentBoard';
 import axios from 'axios';
 import { useParams } from 'react-router';
 import Timezones from '../utils/timezones';
+import { utcToZonedTime } from 'date-fns-tz';
+import { format } from 'date-fns';
 import 'react-day-picker/lib/style.css';
 
 export default function EventDetail(props) {
   const { id } = useParams();
-  const [selectedDays, setSelectedDays] = useState([]);
   const [eventInformation, setEventInformation] = useState({});
+  const [isoHours, setIsoHours] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isHidden, setIsHidden] = useState(true);
   const [selectTimezones, setSelectTimezones] = useState([]);
@@ -33,8 +35,6 @@ export default function EventDetail(props) {
       ]);
     });
 
-    setSelectedTimezone({ value: currentTimeZone, label: currentTimeZone });
-
     const getEventInformation = async (eventId) => {
       let res = await axios.get(
         `https://us-central1-nrggo-test.cloudfunctions.net/app/rest/events/${eventId}`
@@ -45,7 +45,17 @@ export default function EventDetail(props) {
     getEventInformation(id)
       .then((res) => {
         console.log(`getEventInformation success! =>`, res.data);
-        setEventInformation(res.data);
+
+        const { hours } = res.data;
+
+        setEventInformation({
+          ...res.data,
+          hours: hours.map((item) =>
+            format(utcToZonedTime(item, currentTimeZone), 'hh:mm aaaa')
+          ),
+        });
+        setIsoHours(hours);
+        setSelectedTimezone({ value: currentTimeZone, label: currentTimeZone });
       })
       .catch((err) => {
         console.error(`Ups!, there have been an error => ${err}`);
@@ -66,6 +76,7 @@ export default function EventDetail(props) {
     let value = e.target.value;
     setName(value);
   };
+
   let handleVisibility = () => {
     setIsHidden(!isHidden);
   };
@@ -189,6 +200,24 @@ export default function EventDetail(props) {
       });
   };
 
+  let handleSelect = (data) => {
+    handleSelectTimezone(data);
+
+    console.log(
+      isoHours.map((item) =>
+        format(utcToZonedTime(item, data.value), 'hh:mm aaaa')
+      ),
+      data.value
+    );
+
+    setEventInformation({
+      ...eventInformation,
+      hours: isoHours.map((item) =>
+        format(utcToZonedTime(item, data.value), 'hh:mm aaaa')
+      ),
+    });
+  };
+
   if (!eventInformation.active) {
     return (
       <Layout>
@@ -239,7 +268,7 @@ export default function EventDetail(props) {
                       options={selectTimezones}
                       className={'select'}
                       value={selectedTimezone}
-                      onChange={handleSelectTimezone}
+                      onChange={handleSelect}
                     />
                   </div>
                 </Fragment>
