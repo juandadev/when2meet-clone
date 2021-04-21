@@ -3,10 +3,10 @@ import PropTypes from 'prop-types';
 import { Container } from 'react-bootstrap';
 import { Header, Footer } from '../components';
 
-export default function Layout({ children }) {
+export default function Layout({ children, eventName }) {
   return (
     <Container>
-      <Header />
+      <Header eventName={eventName} />
 
       {children}
 
