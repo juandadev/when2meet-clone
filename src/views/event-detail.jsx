@@ -156,7 +156,7 @@ export default function EventDetail(props) {
           className="btn"
           onClick={() => handleEventOnchange()}
         >
-          Guardar
+          Save and end survey
         </div>
       </div>
     </div>
