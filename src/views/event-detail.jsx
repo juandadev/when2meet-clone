@@ -56,6 +56,7 @@ export default function EventDetail(props) {
         });
         setIsoHours(hours);
         setSelectedTimezone({ value: currentTimeZone, label: currentTimeZone });
+        setUserTimezone(currentTimeZone);
       })
       .catch((err) => {
         console.error(`Ups!, there have been an error => ${err}`);
@@ -105,20 +106,17 @@ export default function EventDetail(props) {
         schedules: yourSelection,
         timezone: userTimezone,
       };
+
       console.log('onScheduleSubmit', data);
-      saveSchedules(id, data).then((res) => {
-        getEventInformation(id)
-          .then((res) => {
-            console.log(`getEventInformation success! =>`, res.data);
-            setEventInformation(res.data);
-          })
-          .catch((err) => {
-            console.error(`Ups!, there have been an error => ${err}`);
-          })
-          .finally((res) => {
-            setLoading(false);
-          });
-      });
+
+      saveSchedules(id, data)
+        .then((res) => {})
+        .catch((err) => {
+          console.error(`Ups!, there have been an error => ${err}`);
+        })
+        .finally((res) => {
+          setLoading(false);
+        });
     }
   };
 
@@ -304,7 +302,7 @@ export default function EventDetail(props) {
                           <div
                             role="button"
                             className="btn"
-                            onClick={() => onScheduleSubmit()}
+                            onClick={onScheduleSubmit}
                           >
                             Set schedules
                           </div>
