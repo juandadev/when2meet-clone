@@ -1,7 +1,7 @@
 <h1 align="center">
-  <!-- <br>
-  <a href="http://www.amitmerchant.com/electron-markdownify"><img src="https://raw.githubusercontent.com/amitmerchant1990/electron-markdownify/master/app/img/markdownify.png" alt="Markdownify" width="200"></a>
-  <br> -->
+  <br>
+  <a href="https://nrggo-test.firebaseapp.com/">🤝</a>
+  <br>
   When2Meet clone
   <br>
 </h1>
@@ -27,14 +27,13 @@
 
 <p align="center">
   <a href="#key-features">Key Features</a> •
-  <a href="#how-to-use">How To Use</a> •
+  <a href="#demo">Demo</a> •
   <a href="#credits">Credits</a> •
-  <a href="#related">Related</a> •
-  <a href="#support">Support</a> •
+  <a href="#you-may-also-like">Related</a> •
   <a href="#contributors">Contributors</a>
 </p>
 
-<!-- ![screenshot](https://raw.githubusercontent.com/amitmerchant1990/electron-markdownify/master/app/img/markdownify.gif) -->
+![Website screenshot](https://imgur.com/ewelSqc.png)
 
 ## Key Features
 
@@ -45,40 +44,40 @@
 - As the event owner, you can close the votation to define a result
 - Once the event is closed, everyone can view the results by searching with its event URL
 
-## How To Use
+## Demo
+
+[When2Meet Clone](https://nrggo-test.firebaseapp.com/)
 
 ## Credits
 
 This software was created with the following technologies:
 
-- [React](https://reactjs.org/)
-- [React Router](https://reactrouter.com/)
-- [Bootstrap 4](https://getbootstrap.com/)
-- [Firebase](https://firebase.google.com/)
-- [date-fns](https://date-fns.org/)
+- [React 17](https://reactjs.org/) • Building the UI
+- [React Router 5.2](https://reactrouter.com/) • Managing routing system
+- [Bootstrap 4](https://getbootstrap.com/) • Easily styling the layout
+- [Firebase](https://firebase.google.com/) • Fastest way to persist data
+- [Date-fns 2.21](https://date-fns.org/) • Managing time-zones
 
-## Support
-
-<!-- <a href="https://www.buymeacoffee.com/5Zn8Xh3l9" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/purple_img.png" alt="Buy Me A Coffee" style="height: 41px !important;width: 174px !important;box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;-webkit-box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;" ></a>
-
-<p>Or</p>
-
-<a href="https://www.patreon.com/amitmerchant">
-	<img src="https://c5.patreon.com/external/logo/become_a_patron_button@2x.png" width="160">
-</a> -->
+With the supervision of [Erik Ochoa](https://twitter.com/Elyager), Academic Coach at [Platzi Master](https://platzi.com/master/)
 
 ## You may also like...
 
-<!-- - [Pomolectron](https://github.com/amitmerchant1990/pomolectron) - A pomodoro app
-- [Correo](https://github.com/amitmerchant1990/correo) - A menubar/taskbar Gmail App for Windows and macOS -->
-
-<!-- ## License
- -->
-MIT
+[Ghibli Tracker](https://github.com/thomasnrggo/Ghibli-tracker-client) • Track and rate your favorite movies from Studio Ghibli
+[Flamewars](https://github.com/thomasnrggo/flamewars) • A real time chat for voting events.
 
 ## Contributors
 
 This app was created with 💚 by:
 
-- [Anthony Gonzalez](https://github.com/thomasnrggo) 🇲🇽
-- [Juan Daniel Martínez](https://github.com/juandadev) 🇲🇽
+> Anthony Gonzalez &nbsp;&middot;&nbsp;
+> [thomasnrggo.com](https://thomasnrggo.com) &nbsp;&middot;&nbsp;
+> Web Designer &nbsp;&middot;&nbsp;
+> Frontend Developer &nbsp;&middot;&nbsp;
+> GitHub [@thomasnrggo](https://github.com/thomasnrggo) &nbsp;&middot;&nbsp;
+> Twitter [@thomasnrggo](https://twitter.com/thomasnrggo)
+
+> Juan Daniel Martínez &nbsp;&middot;&nbsp;
+> [juanda.dev](https://juanda.dev) &nbsp;&middot;&nbsp;
+> Frontend Developer &nbsp;&middot;&nbsp;
+> GitHub [@juandadev](https://github.com/juandadev) &nbsp;&middot;&nbsp;
+> Twitter [@juanda_dev_](https://twitter.com/juanda_dev_)
